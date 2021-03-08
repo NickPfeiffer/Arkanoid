@@ -10,10 +10,12 @@ public class Ball : MonoBehaviour
     //speed
     public float maxX;
     public float maxZ;
+
+    public int lifes;
     // Start is called before the first frame update
     void Start()
     {
-        velocity = new Vector3(0, 0, maxZ);
+        velocity = new Vector3(0, 0, -maxZ);
     }
 
     // Update is called once per frame
@@ -32,9 +34,28 @@ public class Ball : MonoBehaviour
             float nDist = dist / maxDist;
             velocity = new Vector3(nDist * maxX, velocity.y, -velocity.z);
         }
+        
+        else if (other.CompareTag("TopWall") || other.CompareTag("Breakable"))
+        {
+            velocity = new Vector3(velocity.x, velocity.y, -velocity.z);
+        }
+        
         else if (other.CompareTag("Wall"))
         {
             velocity = new Vector3(-velocity.x, velocity.y, velocity.z);
+        }
+        
+        else if (other.CompareTag("Finish"))
+        {
+            lifes--;
+            Debug.Log(lifes);
+            
+            //reset position and velocity
+            velocity = new Vector3(0, 0, 0);
+            transform.position = new Vector3(0, transform.position.y, -1);
+
+            //TODO implement timeout before ball starts moving again
+            velocity = new Vector3(0, 0, -maxZ);
         }
 
         GetComponent<AudioSource>().Play();
