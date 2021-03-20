@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Ball : MonoBehaviour
 {
@@ -10,8 +11,6 @@ public class Ball : MonoBehaviour
     //speed
     public float maxX;
     public float maxZ;
-
-    public int lifes;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +25,7 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        //TODO change sounds of paddle or breakable hit
         if (other.CompareTag("Paddle"))
         {
             float maxDist = other.transform.localScale.x * 1 * 0.5f + transform.localScale.x * 1 * 0.5f;
@@ -33,9 +33,18 @@ public class Ball : MonoBehaviour
             //normalize distance to -1 to 1
             float nDist = dist / maxDist;
             velocity = new Vector3(nDist * maxX, velocity.y, -velocity.z);
+            GetComponent<AudioSource>().Play();
         }
         
-        else if (other.CompareTag("TopWall") || other.CompareTag("Breakable"))
+        else if (other.CompareTag("Breakable"))
+        {
+            FindObjectOfType<Paddle>().IncreaseScore();
+            other.GetComponent<Block>().Hit();
+            velocity = new Vector3(velocity.x, velocity.y, -velocity.z);
+            GetComponent<AudioSource>().Play();
+        }
+        
+        else if (other.CompareTag("TopWall"))
         {
             velocity = new Vector3(velocity.x, velocity.y, -velocity.z);
         }
@@ -47,17 +56,7 @@ public class Ball : MonoBehaviour
         
         else if (other.CompareTag("Finish"))
         {
-            lifes--;
-            Debug.Log(lifes);
-            
-            //reset position and velocity
-            velocity = new Vector3(0, 0, 0);
-            transform.position = new Vector3(0, transform.position.y, -1);
-
-            //TODO implement timeout before ball starts moving again
-            velocity = new Vector3(0, 0, -maxZ);
+            FindObjectOfType<Paddle>().DecreaseLife();
         }
-
-        GetComponent<AudioSource>().Play();
     }
 }
