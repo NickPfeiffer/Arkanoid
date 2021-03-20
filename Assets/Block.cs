@@ -1,7 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class Block : MonoBehaviour
@@ -10,8 +8,7 @@ public class Block : MonoBehaviour
 
     public GameObject ball;
 
-    public Material otherMaterial;  //to be able to change material  
-    public Material[] materials;    //array for cracked materials
+    public Material otherMaterial;
     
     // Start is called before the first frame update
     void Start()
@@ -27,21 +24,24 @@ public class Block : MonoBehaviour
 
     public void Hit()
     {
-        //TODO change range back to 0 to 30
-        int random = Random.Range(0, 5);
-        if (random == 1)
-        {
-            SpawnPowerup(0);    //spawns multiball
-        } 
-        else if (random == 2)
-        {
-            SpawnPowerup(1);
-        }
+        GetComponent<MeshRenderer>().material = otherMaterial;
+        
         hits--;
         if (hits == 0)
         {
             FindObjectOfType<Paddle>().DecreaseBlockCount();
             Destroy(gameObject);
+        }
+        
+        //TODO change range back to 0 to 30
+        int random = Random.Range(0, 5);
+        if (random == 1)
+        {
+            SpawnPowerup(0);    //multiball
+        } 
+        else if (random == 2)
+        {
+            SpawnPowerup(1);    //bigger paddle
         }
     }
     
@@ -52,8 +52,9 @@ public class Block : MonoBehaviour
         if (powerup == 0)
         {
             Debug.Log("multiball");
-            Instantiate(ball, ball.transform.position + new Vector3(1, 0, 0), Quaternion.identity);
-            Instantiate(ball, ball.transform.position - new Vector3(1, 0, 0), Quaternion.identity);
+            var position = ball.transform.position;
+            Instantiate(ball, position + new Vector3(1, 0, 0), Quaternion.identity);
+            Instantiate(ball, position - new Vector3(1, 0, 0), Quaternion.identity);
             FindObjectOfType<Paddle>().IncreaseBallCount();
         }
         //bigger paddle

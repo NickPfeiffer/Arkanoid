@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,6 +10,11 @@ public class Paddle : MonoBehaviour
     
     private int score;
     public Text scoreValue;
+
+    private float countdown = 3.0f;
+    private int seconds;
+    public bool countdownRunning = false;
+    public Text countdownText;
     
     public int lifes;
     public Image[] hearts;
@@ -33,6 +35,7 @@ public class Paddle : MonoBehaviour
     {
         playAreaSize = playArea.localScale.x * 10;
         paddleSize = transform.localScale.x * 1;      //*1 is not needed, just used for clarity
+        countdownText.text = countdown.ToString();
     }
 
     // Update is called once per frame
@@ -47,6 +50,24 @@ public class Paddle : MonoBehaviour
         clampedX = Mathf.Clamp(newX, -maxX, maxX);
 
         transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
+        
+        //TODO hide and display timer
+        if (countdownRunning)
+        {
+            if (countdown > 0)
+            {
+                countdown -= Time.deltaTime;
+                seconds = Mathf.FloorToInt(countdown);
+                countdownText.text = seconds.ToString();
+            }
+            else
+            {
+                countdown = 0;
+                countdownRunning = false;
+                countdown = 3;
+                countdownText.text = countdown.ToString();
+            }
+        }
     }
     
     public void DecreaseLife()
@@ -54,13 +75,11 @@ public class Paddle : MonoBehaviour
         if (ballCount > 1)
         {
             ballCount--;
-            Debug.Log("DEcrease ballCount, new ballCount:" + ballCount);
         }
         else
         {
             ballCount--; //reduce ballCount to zero
             lifes--;
-            Debug.Log("lifes " + lifes);
             
             if (lifes == 0)
             {
@@ -70,13 +89,24 @@ public class Paddle : MonoBehaviour
             else
             {
                 Destroy(hearts[lifes]);
+                countdownRunning = true;
                 Invoke(nameof(SpawnNewBall), 3);
-                ballCount += 1; //add one to ballCount because a new one was created now/
+                ballCount += 1; //add one to ballCount because a new one was created now
                 GetComponent<AudioSource>().Play();
             }
         }
     }
 
+    private void CountDown()
+    {
+        Debug.Log("COUNTDOWN");
+        if (countdown > 0)
+        {
+            countdown -= Time.deltaTime;
+        }
+        countdownText.text = countdown.ToString();
+    }
+    
     public void DecreaseBlockCount()
     {
         blockCount--;

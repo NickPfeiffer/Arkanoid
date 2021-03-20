@@ -110,5 +110,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hits: 2
   ball: {fileID: 6330980071561377564, guid: efe98df7616b3fa4e827ea49c692b25c, type: 3}
-  otherMaterial: {fileID: 0}
+  otherMaterial: {fileID: 2100000, guid: 51c68d7db4a896547a8241f378d0d94c, type: 2}
   materials: []
