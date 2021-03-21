@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour
     //speed
     public float maxX;
     public float maxZ;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +22,6 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //TODO change sounds of paddle or breakable hit
         if (other.CompareTag("Paddle"))
         {
             float maxDist = other.transform.localScale.x * 1 * 0.5f + transform.localScale.x * 1 * 0.5f;

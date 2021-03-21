@@ -1,11 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Paddle : MonoBehaviour
 {
-    //can be changed through editor, editor always overrides this
-    //so setting it initial here is quite useless
     public float speed;
     
     private int score;
@@ -30,12 +29,14 @@ public class Paddle : MonoBehaviour
     private float clampedX;
     private float maxX;
     public Transform playArea;
+
     // Start is called before the first frame update
     void Start()
     {
         playAreaSize = playArea.localScale.x * 10;
-        paddleSize = transform.localScale.x * 1;      //*1 is not needed, just used for clarity
+        paddleSize = transform.localScale.x * 1;
         countdownText.text = countdown.ToString();
+        countdownText.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -51,9 +52,9 @@ public class Paddle : MonoBehaviour
 
         transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
         
-        //TODO hide and display timer
         if (countdownRunning)
         {
+            countdownText.gameObject.SetActive(true);
             if (countdown > 0)
             {
                 countdown -= Time.deltaTime;
@@ -63,13 +64,31 @@ public class Paddle : MonoBehaviour
             else
             {
                 countdown = 0;
+                countdownText.gameObject.SetActive(false);
                 countdownRunning = false;
                 countdown = 3;
                 countdownText.text = countdown.ToString();
             }
         }
     }
-    
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PowerupMultiball"))
+        {
+            var position = new Vector3(0, 0.25f, -1);
+            Instantiate(ball, position + new Vector3(1, 0, 0), Quaternion.identity);
+            Instantiate(ball, position - new Vector3(1, 0, 0), Quaternion.identity);
+            IncreaseBallCount();
+            other.GetComponent<Powerup>().Destroy();
+        }
+        else if (other.CompareTag("PowerupPaddle"))
+        {
+            IncreasePaddleSize();
+            other.GetComponent<Powerup>().Destroy();
+        }
+    }
+
     public void DecreaseLife()
     {
         if (ballCount > 1)
@@ -83,34 +102,22 @@ public class Paddle : MonoBehaviour
             
             if (lifes == 0)
             {
-                SceneManager.LoadScene("End");
-                //this also plays the sound that is added at the Canvas (because Play on Awake is ticked)
+                SceneManager.LoadScene("End"); //this also plays the sound that is added at the Canvas (because Play on Awake is ticked)
             }
             else
             {
                 Destroy(hearts[lifes]);
                 countdownRunning = true;
                 Invoke(nameof(SpawnNewBall), 3);
-                ballCount += 1; //add one to ballCount because a new one was created now
+                ballCount += 1;
                 GetComponent<AudioSource>().Play();
             }
         }
     }
 
-    private void CountDown()
-    {
-        Debug.Log("COUNTDOWN");
-        if (countdown > 0)
-        {
-            countdown -= Time.deltaTime;
-        }
-        countdownText.text = countdown.ToString();
-    }
-    
     public void DecreaseBlockCount()
     {
         blockCount--;
-        Debug.Log("blocks left:" + blockCount);
         if (blockCount == 0)
         {
             SceneManager.LoadScene("Win");
@@ -129,13 +136,13 @@ public class Paddle : MonoBehaviour
         scoreValue.text = score.ToString();
     }
     
-    public void IncreaseBallCount()
+    private void IncreaseBallCount()
     {
         ballCount += 2;
         Debug.Log("Increase ballCount, new ballCount:" + ballCount);
     }
 
-    public void IncreasePaddleSize()
+    private void IncreasePaddleSize()
     {
         paddleWidth.transform.localScale = new Vector3(4.0f , 1.0f, 1.0f);
         paddleSize = 4;

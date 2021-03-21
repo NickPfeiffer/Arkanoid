@@ -108,7 +108,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 097ee9b787ee75248842943805ed1805, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hits: 2
   ball: {fileID: 6330980071561377564, guid: efe98df7616b3fa4e827ea49c692b25c, type: 3}
+  multiballDrop: {fileID: 2489601096510134962, guid: 76d21b10c51be044e963a7a050b4084e, type: 3}
+  paddleDrop: {fileID: 2196099279616277287, guid: 68ca3036b2cd64f4d8db53b397ca903d, type: 3}
   otherMaterial: {fileID: 2100000, guid: 51c68d7db4a896547a8241f378d0d94c, type: 2}
-  materials: []
+  hits: 2

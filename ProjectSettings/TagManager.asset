@@ -8,6 +8,8 @@ TagManager:
   - Wall
   - TopWall
   - Breakable
+  - PowerupMultiball
+  - PowerupPaddle
   layers:
   - Default
   - TransparentFX
